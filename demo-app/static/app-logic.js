@@ -6,7 +6,8 @@ export function matchesRecipe(searchText, query) {
 }
 
 export function formatResultCount(count) {
-  return count === 1 ? '1 recipe' : `${count} recipes`;
+  const total = Number(count) || 0;
+  return total === 1 ? '1 recipe' : `${total} recipes`;
 }
 
 export function toggleSavedIds(current, id) {

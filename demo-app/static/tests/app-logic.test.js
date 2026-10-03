@@ -12,6 +12,9 @@ test('recipe matching ignores case and surrounding whitespace', () => {
 test('result count and empty message', () => {
   assert.equal(formatResultCount(1), '1 recipe');
   assert.equal(formatResultCount(3), '3 recipes');
+  assert.equal(formatResultCount(0), '0 recipes');
+  assert.equal(formatResultCount(undefined), '0 recipes');
+  assert.equal(formatResultCount(NaN), '0 recipes');
   assert.equal(EMPTY_MESSAGE, 'No recipes found. Try another ingredient or dish.');
 });
 

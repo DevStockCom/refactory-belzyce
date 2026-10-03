@@ -22,6 +22,12 @@ test('nextFocus handles empty shapes and unhandled keys', () => {
   assert.equal(nextFocus([2], start, 'Enter'), null);
 });
 
+test('nextFocus tolerates a missing position', () => {
+  assert.deepEqual(nextFocus([3], undefined, 'ArrowRight'), {rail: 0, index: 1});
+  assert.deepEqual(nextFocus([], null, 'ArrowDown'), {rail: 0, index: 0});
+  assert.equal(nextFocus([3], null, 'Enter'), null);
+});
+
 test('enterTarget keeps TV mode', () => {
   assert.equal(enterTarget('a b'), '/recipe/a%20b?mode=tv');
 });

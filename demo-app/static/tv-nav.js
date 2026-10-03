@@ -15,11 +15,12 @@ export const DETAIL_ACTIONS = ['back', 'cookbook'];
  */
 export function nextFocus(shape, current, key) {
   const rails = Array.isArray(shape) ? shape : [];
-  const {rail, index} = current;
+  const position = current ?? {rail: 0, index: 0};
+  const {rail, index} = position;
   const length = (i) => (rails[i] > 0 ? rails[i] : 0);
   if (key === 'ArrowLeft' || key === 'ArrowRight') {
     const size = length(rail);
-    if (!size) return current;
+    if (!size) return position;
     const next = Math.min(size - 1, Math.max(0, index + (key === 'ArrowRight' ? 1 : -1)));
     return {rail, index: next};
   }
@@ -28,7 +29,7 @@ export function nextFocus(shape, current, key) {
     for (let i = rail + step; i >= 0 && i < rails.length; i += step) {
       if (length(i)) return {rail: i, index: Math.min(index, length(i) - 1)};
     }
-    return current;
+    return position;
   }
   return null;
 }
