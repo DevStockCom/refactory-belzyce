@@ -32,7 +32,11 @@ def client(flask_app):
 
 
 def ids_of(response):
-    return [r["id"] for r in response.get_json()]
+    payload = response.get_json()
+    assert isinstance(payload, list), (
+        f"expected a JSON list, got HTTP {response.status_code}"
+    )
+    return [recipe["id"] for recipe in payload]
 
 
 # ---- recipes -------------------------------------------------------------
@@ -181,6 +185,7 @@ def test_rails_returns_four_named_rails(client):
     res = client.get("/api/rails")
     assert res.status_code == 200
     rails = res.get_json()
+    assert isinstance(rails, list)
     assert [r["name"] for r in rails] == list(domain.RAIL_NAMES)
     assert all(set(r) == {"name", "recipe_ids"} for r in rails)
     assert rails == domain.build_rails(RECIPES, [])
@@ -190,11 +195,18 @@ def test_rails_returns_four_named_rails(client):
 
 def test_cookbook_rail_changes_after_save_and_remove(client):
     client.post("/api/cookbook", json={"id": IDS[4]})
-    rails = client.get("/api/rails").get_json()
+    res = client.get("/api/rails")
+    assert res.status_code == 200
+    rails = res.get_json()
+    assert isinstance(rails, list) and len(rails) == 4
     assert rails[3] == {"name": "My Cookbook", "recipe_ids": [IDS[4]]}
     assert rails == domain.build_rails(RECIPES, [IDS[4]])
     client.delete(f"/api/cookbook/{IDS[4]}")
-    assert client.get("/api/rails").get_json()[3]["recipe_ids"] == []
+    again = client.get("/api/rails")
+    assert again.status_code == 200
+    after = again.get_json()
+    assert isinstance(after, list) and len(after) == 4
+    assert after[3]["recipe_ids"] == []
 
 
 # ---- 404 handling --------------------------------------------------------
