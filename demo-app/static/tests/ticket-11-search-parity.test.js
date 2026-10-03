@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import {matchesRecipe} from '../app-logic.js';
 
 const fixturePath = new URL('./fixtures/search-parity.json', import.meta.url);
 
 function load() {
+  assert.ok(existsSync(fixturePath), 'missing parity fixture: static/tests/fixtures/search-parity.json');
   const data = JSON.parse(readFileSync(fixturePath, 'utf8'));
   const rawTexts = data.texts ?? data.recipes;
   assert.ok(rawTexts, 'fixture needs a per-recipe search_text collection');
