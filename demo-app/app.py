@@ -1,63 +1,126 @@
-"""Pocket Cinema: the intentionally mobile-shaped workshop workpiece."""
+"""TableStory: a recipe discovery app for mobile and TV."""
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from flask import Flask, abort, jsonify, render_template, request
 
-ROOT = Path(__file__).parent
+from domain import (
+    CookbookStore,
+    build_rails,
+    search_recipes,
+    search_text,
+    validate_rails,
+)
+from recipes import load_recipes, total_minutes
+
+TV_UA_HINTS = (
+    "smart-tv",
+    "smarttv",
+    "tizen",
+    "web0s",
+    "webos",
+    "appletv",
+    "googletv",
+    "android tv",
+    "roku",
+    "viera",
+    "hbbtv",
+    "crkey",
+    "aftb",
+    "bravia",
+)
 
 
-def load_catalog() -> list[dict]:
-    return json.loads((ROOT / "catalog.json").read_text())
+def is_tv_request(args, user_agent) -> bool:
+    """TV mode: ?mode=tv or a TV user-agent hint; any other explicit mode opts out."""
+    mode = args.get("mode")
+    if mode:
+        return mode.lower() == "tv"
+    agent = (user_agent or "").lower()
+    return any(hint in agent for hint in TV_UA_HINTS)
+
+
+def register_template_helpers(app: Flask) -> None:
+    app.jinja_env.filters["total_minutes"] = total_minutes
+    app.jinja_env.filters["search_text"] = search_text
 
 
 def create_app(testing: bool = False) -> Flask:
     app = Flask(__name__)
-    app.config.update(TESTING=testing, WATCHLIST=set())
-    catalog = load_catalog()
-    by_id = {movie["id"]: movie for movie in catalog}
+    app.config.update(TESTING=testing)
+    recipes = load_recipes()
+    validate_rails(build_rails(recipes, []), recipes)
+    by_id = {recipe["id"]: recipe for recipe in recipes}
+    store = CookbookStore(recipes)
+    app.extensions["cookbook"] = store
+    register_template_helpers(app)
+
+    def is_tv() -> bool:
+        return is_tv_request(request.args, request.headers.get("User-Agent"))
 
     @app.get("/")
     def index():
-        return render_template("index.html", movies=catalog)
+        tv = is_tv()
+        context = {
+            "recipes": recipes,
+            "saved_ids": set(store.ids()),
+            "tv": tv,
+            "mode": "tv" if tv else "mobile",
+        }
+        if tv:
+            return render_template("tv_home.html", rails=build_rails(recipes, store.ids()), **context)
+        return render_template("index.html", **context)
 
-    @app.get("/movie/<movie_id>")
-    def detail(movie_id: str):
-        movie = by_id.get(movie_id)
-        if not movie:
+    @app.get("/recipe/<recipe_id>")
+    def detail(recipe_id: str):
+        recipe = by_id.get(recipe_id)
+        if not recipe:
             abort(404)
-        return render_template("detail.html", movie=movie)
+        tv = is_tv()
+        return render_template(
+            "tv_detail.html" if tv else "detail.html",
+            recipe=recipe,
+            saved=store.contains(recipe_id),
+            tv=tv,
+            mode="tv" if tv else "mobile",
+            back_url="/?mode=tv" if tv else "/",
+        )
 
-    @app.get("/api/movies")
-    def movies_api():
-        query = request.args.get("q", "").strip().lower()
-        movies = [m for m in catalog if query in (m["title"] + " " + " ".join(m["genres"])).lower()]
-        return jsonify(movies)
+    @app.get("/api/recipes")
+    def api_recipes():
+        return jsonify(search_recipes(recipes, request.args.get("q", "")))
 
-    @app.get("/api/movies/<movie_id>")
-    def movie_api(movie_id: str):
-        movie = by_id.get(movie_id)
-        return jsonify(movie) if movie else (jsonify({"error": "Movie not found"}), 404)
+    @app.get("/api/recipes/<recipe_id>")
+    def api_recipe(recipe_id: str):
+        recipe = by_id.get(recipe_id)
+        return jsonify(recipe) if recipe else (jsonify({"error": "Recipe not found"}), 404)
 
-    @app.get("/api/watchlist")
-    def get_watchlist():
-        return jsonify([by_id[mid] for mid in app.config["WATCHLIST"] if mid in by_id])
+    @app.get("/api/cookbook")
+    def api_cookbook():
+        return jsonify(store.recipes())
 
-    @app.post("/api/watchlist")
-    def add_watchlist():
-        movie_id = (request.get_json(silent=True) or {}).get("id")
-        if movie_id not in by_id:
-            return jsonify({"error": "Unknown movie"}), 400
-        app.config["WATCHLIST"].add(movie_id)
-        return jsonify({"ids": sorted(app.config["WATCHLIST"])}), 201
+    @app.post("/api/cookbook")
+    def api_cookbook_add():
+        body = request.get_json(silent=True)
+        recipe_id = body.get("id") if isinstance(body, dict) else None
+        if not store.add(recipe_id):
+            return jsonify({"error": "Unknown recipe"}), 400
+        return jsonify({"recipe_ids": store.ids()}), 201
 
-    @app.delete("/api/watchlist/<movie_id>")
-    def remove_watchlist(movie_id: str):
-        app.config["WATCHLIST"].discard(movie_id)
-        return jsonify({"ids": sorted(app.config["WATCHLIST"])})
+    @app.delete("/api/cookbook/<recipe_id>")
+    def api_cookbook_remove(recipe_id: str):
+        store.remove(recipe_id)
+        return jsonify({"recipe_ids": store.ids()})
+
+    @app.get("/api/rails")
+    def api_rails():
+        return jsonify(build_rails(recipes, store.ids()))
+
+    @app.errorhandler(404)
+    def not_found(error):
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "Not found"}), 404
+        return render_template("404.html"), 404
 
     return app
 
