@@ -2,7 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as logic from '../app-logic.js';
 
-const loadNav = () => import('../tv-nav.js');
+const loadNav = async () => {
+  try {
+    return await import('../tv-nav.js');
+  } catch (error) {
+    return assert.fail(`static/tv-nav.js must exist and load as an ES module (${error.code ?? error.name})`);
+  }
+};
 const BANNED = /\b(pocket cinema|pc|movies?|films?|cinema|watchlist|posters?|runtime|ratings?|genres?)\b|matchesMovie|nextWatchlist/i;
 
 test('app-logic exports the recipe API and drops the film-named exports', () => {
