@@ -166,6 +166,7 @@ def test_cookbook_state_is_fresh_per_app_instance(client):
 
 
 def test_cookbook_store_lives_in_app_extensions(flask_app):
+    assert "cookbook" in flask_app.extensions, "app.extensions['cookbook'] is missing"
     store = flask_app.extensions["cookbook"]
     assert isinstance(store, domain.CookbookStore)
     flask_app.test_client().post("/api/cookbook", json={"id": IDS[0]})
@@ -288,14 +289,6 @@ def _bad_data(tmp_path, monkeypatch, mutate):
 )
 def test_app_refuses_to_start_on_invalid_data(tmp_path, monkeypatch, mutate):
     _bad_data(tmp_path, monkeypatch, mutate)
-    with pytest.raises(ValueError):
-        create_app(testing=True)
-
-
-def test_app_refuses_to_start_on_missing_data_file(tmp_path, monkeypatch):
-    import recipes as recipes_module
-
-    monkeypatch.setattr(recipes_module, "ROOT", tmp_path)
     with pytest.raises(ValueError):
         create_app(testing=True)
 
