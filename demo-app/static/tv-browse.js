@@ -31,7 +31,8 @@ export function initTvBrowse(doc) {
   doc.addEventListener('keydown', (event) => {
     const current = positionOf();
     if (event.key === 'Enter') {
-      if (!current) return;
+      // Only the card's own link activates a card; other focusables inside it (the save toggle) keep native Enter.
+      if (!current || doc.activeElement !== focusTarget(rails[current.rail][current.index])) return;
       event.preventDefault();
       location.assign(enterTarget(rails[current.rail][current.index].dataset.recipeId));
       return;

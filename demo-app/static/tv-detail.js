@@ -1,10 +1,6 @@
 import {cookbookHandler} from './app.js';
 import {detailExit, detailNext} from './tv-nav.js';
-
-function focusAndReveal(element) {
-  element.focus({preventScroll: true});
-  element.scrollIntoView({block: 'nearest', inline: 'nearest'});
-}
+import {focusAndReveal} from './tv-browse.js';
 
 export function initTvDetail(doc, onCookbook = cookbookHandler) {
   const elements = [...doc.querySelectorAll('[data-action]')];
