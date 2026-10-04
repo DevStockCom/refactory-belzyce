@@ -70,9 +70,17 @@ class Tree(HTMLParser):
         return [n for n in self.root.walk() if pred(n)]
 
 
+def fetch(client, path, **kwargs):
+    """GET a page; a server-side failure (e.g. a missing template) is a behavior failure."""
+    try:
+        return client.get(path, **kwargs)
+    except Exception as exc:  # noqa: BLE001
+        raise AssertionError("GET %s raised %s: %s" % (path, type(exc).__name__, exc)) from None
+
+
 def tree(client, path, **kwargs):
-    response = client.get(path, **kwargs)
-    assert response.status_code == 200, path
+    response = fetch(client, path, **kwargs)
+    assert response.status_code == 200, "%s -> %s" % (path, response.status_code)
     return Tree(response.get_data(as_text=True)), response.get_data(as_text=True)
 
 
@@ -355,7 +363,7 @@ def tv_paths(recipes):
 def test_tv_pages_have_no_banned_terms(client, recipes):
     client.post("/api/cookbook", json={"id": recipes[0]["id"]})
     for path in tv_paths(recipes):
-        html = client.get(path).get_data(as_text=True)
+        html = tree(client, path)[1]
         for pat in banned_patterns():
             hit = pat.search(html)
             assert hit is None, "%s: %s" % (path, hit.group(0) if hit else "")
