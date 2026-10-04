@@ -41,7 +41,7 @@ main { padding:0 18px 48px; max-width:720px; margin:auto; }
 .recipe-art::after { content:""; position:absolute; width:70%; aspect-ratio:1; right:-18%; bottom:-30%; clip-path:circle(50%); border:6px solid rgba(255,248,237,.45); }
 .art-initial { position:relative; z-index:1; font-family:Georgia,serif; font-weight:900; font-size:96px; line-height:1; color:var(--cream); text-shadow:0 2px 0 rgba(38,35,31,.45),0 0 18px rgba(38,35,31,.5); }
 .labels { display:flex; flex-wrap:wrap; gap:6px; }
-.label { display:inline-block; padding:2px 10px; border:1.5px solid var(--herb); border-radius:999px; color:var(--herb); font:700 12px/1.6 ui-sans-serif,system-ui,sans-serif; }
+.label { display:inline-block; padding:2px 10px; border:1.5px solid var(--herb); border-radius:999px; color:var(--herb); font:700 12px/1.6 ui-sans-serif,system-ui,sans-serif; font-size:12px; }
 .empty { text-align:center; padding:40px 0; font-size:18px; }
 
 /* Cookbook toggle: unsaved = dashed outline + "+ Save"; saved = solid fill + "✓ Saved" */
