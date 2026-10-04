@@ -2,7 +2,7 @@
 // A tiny in-memory DOM is installed on globalThis before each script is imported, so no browser is needed.
 import test, {before} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 
 const STATIC = new URL('../', import.meta.url);
 const BROWSE_URL = new URL('../tv-browse.js', import.meta.url);
@@ -188,6 +188,7 @@ function install(doc) {
 }
 
 async function load(url, doc, log) {
+  assert.ok(existsSync(url), `${url.pathname.split('/').pop()} has not been added to demo-app/static yet`);
   instrument(doc, log);
   const env = install(doc);
   try {
@@ -516,7 +517,11 @@ test('tv-detail is a no-op when the action hooks are absent', async () => {
 });
 
 // ---------- source-level constraints ----------
-const read = (name) => readFileSync(new URL(name, STATIC), 'utf8');
+const read = (name) => {
+  const url = new URL(name, STATIC);
+  assert.ok(existsSync(url), `${name} has not been added to demo-app/static yet`);
+  return readFileSync(url, 'utf8');
+};
 const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
 test('both scripts exist and reuse tv-nav.js instead of duplicating its logic', () => {
