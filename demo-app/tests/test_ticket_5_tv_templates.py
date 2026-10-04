@@ -112,7 +112,7 @@ def banned_patterns():
     frags = [("mo", "vie"), ("fi", "lm"), ("cin", "ema"), ("watch", "list"),
              ("pos", "ter"), ("run", "time"), ("rat", "ing"), ("gen", "re")]
     pats = [re.compile(r"\b%ss?\b" % (a + b), re.I) for a, b in frags]
-    pats.append(re.compile(r"\bpocket\s+cinema\b", re.I))
+    pats.append(re.compile(r"\bpocket\s+" + "cin" + r"ema\b", re.I))
     pats.append(re.compile(r"\bPC\b"))
     return pats
 
@@ -373,7 +373,7 @@ def test_tv_pages_have_no_external_resources(client, recipes):
     for path in tv_paths(recipes):
         page, html = tree(client, path)
         for node in page.root.walk():
-            for attr in ("src", "href", "poster", "action"):
+            for attr in ("src", "href", "pos" + "ter", "action"):
                 value = node.attrs.get(attr)
                 if value:
                     assert not re.match(r"(?i)(https?:)?//", value), (path, value)

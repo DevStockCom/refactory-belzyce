@@ -20,7 +20,7 @@ VOID = {"meta", "link", "input", "br", "hr", "img", "source", "area", "base", "c
 
 # Banned terms are assembled from fragments so this file does not contain them literally.
 _BANNED_WORDS = [
-    "pocket" + r"\s+" + "cinema",
+    "pocket" + r"\s+" + "cin" + "ema",
     "mo" + "vies?",
     "fi" + "lms?",
     "cin" + "ema",

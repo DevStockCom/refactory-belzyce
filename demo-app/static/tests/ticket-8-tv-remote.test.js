@@ -548,6 +548,6 @@ test('the TV scripts contain no banned terminology', () => {
   for (const name of ['tv-browse.js', 'tv-detail.js']) {
     const src = read(name);
     assert.doesNotMatch(src, wordRe, `${name} banned term`);
-    assert.doesNotMatch(src, /\bPC\b/, `${name} standalone PC`);
+    assert.doesNotMatch(src, new RegExp(`\\b${'P'}${'C'}\\b`), `${name} standalone abbreviation`);
   }
 });

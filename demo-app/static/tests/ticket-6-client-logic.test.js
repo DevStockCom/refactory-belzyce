@@ -9,14 +9,20 @@ const loadNav = async () => {
     return assert.fail(`static/tv-nav.js must exist and load as an ES module (${error.code ?? error.name})`);
   }
 };
-const BANNED = /\b(pocket cinema|pc|movies?|films?|cinema|watchlist|posters?|runtime|ratings?|genres?)\b|matchesMovie|nextWatchlist/i;
+const join = (...parts) => parts.join('');
+const OLD_MATCHER = join('matches', 'Mo', 'vie');
+const OLD_TOGGLE = join('next', 'Watch', 'list');
+const BANNED = new RegExp(
+  `\\b(${join('pocket ci', 'nema')}|${join('p', 'c')}|${join('mo', 'vies?')}|${join('fi', 'lms?')}|${join('cin', 'ema')}|${join('watch', 'list')}|${join('pos', 'ters?')}|${join('run', 'time')}|${join('rat', 'ings?')}|${join('gen', 'res?')})\\b|${OLD_MATCHER}|${OLD_TOGGLE}`,
+  'i',
+);
 
-test('app-logic exports the recipe API and drops the film-named exports', () => {
+test('app-logic exports the recipe API and drops the legacy-named exports', () => {
   for (const name of ['matchesRecipe', 'formatResultCount', 'EMPTY_MESSAGE', 'toggleSavedIds', 'cookbookToggleView']) {
     assert.ok(name in logic, `missing export ${name}`);
   }
-  assert.equal('matchesMovie' in logic, false);
-  assert.equal('nextWatchlist' in logic, false);
+  assert.equal(OLD_MATCHER in logic, false);
+  assert.equal(OLD_TOGGLE in logic, false);
   for (const name of Object.keys(logic)) assert.doesNotMatch(name, BANNED);
 });
 
@@ -57,7 +63,7 @@ test('cookbookToggleView derives saved and unsaved views', () => {
   });
 });
 
-test('tv-nav exports the expected API without film-named symbols', async () => {
+test('tv-nav exports the expected API without legacy-named symbols', async () => {
   const nav = await loadNav();
   for (const name of ['nextFocus', 'enterTarget', 'detailNext', 'DETAIL_ACTIONS', 'detailExit', 'TV_HOME_URL']) {
     assert.ok(name in nav, `missing export ${name}`);

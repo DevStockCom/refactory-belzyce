@@ -428,13 +428,15 @@ test('only /api/cookbook endpoints are ever called', async () => {
 });
 
 // ---------- static source guarantees ----------
-test('app.js has no legacy endpoint, film-domain or watchlist symbol and no network image', () => {
+test('app.js has no legacy endpoint or legacy-domain symbol and no network image', () => {
   const src = readFileSync(APP_URL, 'utf8');
-  const banned = ['pocket', 'movie', 'movies', 'film', 'films', 'cinema', 'watchlist', 'poster', 'posters', 'runtime', 'rating', 'ratings', 'genre', 'genres'];
+  const banned = [['pocket'], ['mo', 'vie'], ['mo', 'vies'], ['fi', 'lm'], ['fi', 'lms'], ['cin', 'ema'], ['watch', 'list'], ['pos', 'ter'], ['pos', 'ters'], ['run', 'time'], ['rat', 'ing'], ['rat', 'ings'], ['gen', 're'], ['gen', 'res']].map((p) => p.join(''));
   const words = src.toLowerCase().split(/[^a-z]+/);
   for (const term of banned) assert.ok(!words.includes(term), `app.js still mentions "${term}"`);
-  assert.doesNotMatch(src, /matchesMovie|nextWatchlist|\.movie-card|dataset\.title/);
-  assert.doesNotMatch(src, /\/api\/(movies|watchlist)|\/movie\b/);
+  const oldNames = new RegExp(['matches', 'Mo', 'vie'].join('') + '|' + ['next', 'Watch', 'list'].join('') + '|\\.' + ['mo', 'vie'].join('') + '-card|dataset\\.title');
+  assert.doesNotMatch(src, oldNames);
+  const oldRoutes = new RegExp('/api/(' + ['mo', 'vies'].join('') + '|' + ['watch', 'list'].join('') + ')|/' + ['mo', 'vie'].join('') + '\\b');
+  assert.doesNotMatch(src, oldRoutes);
   assert.doesNotMatch(src, /https?:\/\/|new Image\(|\.(png|jpe?g|gif|webp|svg)\b/i);
   assert.match(src, /\/api\/cookbook/);
 });

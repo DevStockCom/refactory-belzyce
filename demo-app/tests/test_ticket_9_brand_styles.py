@@ -320,7 +320,7 @@ def test_rendered_cards_carry_distinct_art_vars(client, recipes):
 
 # --- Criterion 6: renamed classes / variables, detail layout ----------------------
 
-@pytest.mark.parametrize("old", [r"movie", r"poster", r"watchlist", r"--poster-"])
+@pytest.mark.parametrize("old", ["mo" + "vie", "pos" + "ter", "watch" + "list", "--pos" + "ter-"])
 def test_no_legacy_names_in_stylesheet(css, old):
     assert not re.search(old, css, re.I), f"legacy name {old!r} still in styles.css"
 
