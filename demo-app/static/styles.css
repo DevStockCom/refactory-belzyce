@@ -68,7 +68,7 @@ main { padding:0 18px 48px; max-width:720px; margin:auto; }
 .steps li { counter-increment:step; position:relative; padding:12px 0 12px 52px; min-height:56px; }
 .steps li::before { content:counter(step); position:absolute; left:0; top:10px; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:var(--tomato); color:var(--cream); font:800 17px/1 ui-sans-serif,system-ui,sans-serif; }
 
-@media (min-width:560px) { .recipe-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (min-width:560px) { main .recipe-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
 
 /* TV mode: same brand, larger type, spacing and focus contrast */
 body[data-mode="tv"] { font-size:24px; }
@@ -80,16 +80,19 @@ body[data-mode="tv"] .hero h1 { font-size:64px; }
 body[data-mode="tv"] .hero p { font-size:26px; }
 .tv-rail { margin:0 0 32px; }
 .tv-rail h2 { margin:0 0 14px; font-size:34px; }
-.rail-track { display:flex; gap:28px; overflow-x:auto; padding:12px 12px 20px; scroll-padding:0 48px; }
+.rail-track { display:flex; flex-wrap:nowrap; gap:28px; overflow-x:auto; padding:32px 24px; padding-top:32px; scroll-padding:0 48px; }
 .rail-track .recipe-card { flex:0 0 340px; scroll-margin:24px 48px; }
 .rail-track .recipe-card h3 { font-size:24px; }
 .rail-track .recipe-card p { font-size:20px; }
 .rail-track .recipe-card:focus-within { outline:6px solid var(--charcoal); outline-offset:4px; transform:scale(1.03); }
-.rail-track .empty { text-align:left; padding:16px 0; }
+.rail-track .empty { flex:1 1 auto; text-align:left; padding:28px 32px; font-size:26px; border:3px dashed var(--herb); border-radius:var(--radius); background:var(--cream); }
 body[data-mode="tv"] .detail-shell { max-width:1100px; padding-top:32px; }
 body[data-mode="tv"] .back { min-height:64px; font-size:26px; }
 body[data-mode="tv"] .cookbook-toggle { min-height:72px; font-size:26px; }
 body[data-mode="tv"] .description,body[data-mode="tv"] .ingredients li,body[data-mode="tv"] .steps li { font-size:26px; }
 body[data-mode="tv"] .steps li { padding-left:64px; }
 body[data-mode="tv"] .steps li::before { width:44px; height:44px; font-size:22px; }
+body[data-mode="tv"] .back,body[data-mode="tv"] .cookbook-toggle { scroll-margin-top:112px; }
+body[data-mode="tv"] .eyebrow,body[data-mode="tv"] .facts dt,body[data-mode="tv"] .label { font-size:18px; }
+body[data-mode="tv"] .facts dd { font-size:24px; }
 body[data-mode="tv"] .detail-art { aspect-ratio:21/9; }
