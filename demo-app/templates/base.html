@@ -9,11 +9,12 @@
 </head>
 <body class="{% block body_class %}{% endblock %}" data-mode="{{ mode }}">
   <header class="topbar">
-    <a class="brand" href="/" aria-label="TableStory home"><span class="brand-mark" aria-hidden="true">T</span>TableStory</a>
+    <a class="brand" href="{{ '/?mode=tv' if mode == 'tv' else '/' }}" aria-label="TableStory home"><span class="brand-mark" aria-hidden="true">T</span>TableStory</a>
   </header>
   <main>
     {% block content %}{% endblock %}
   </main>
   <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

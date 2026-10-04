@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}TableStory on TV{% endblock %}
+{% block body_class %}tv-home{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Good food, clearly told.</h1>
+  <p>Find recipes for everyday cooking, by dish, ingredient or dietary need.</p>
+</section>
+{% for rail in rails %}
+<section class="tv-rail" data-rail="{{ rail.name }}" aria-labelledby="rail-{{ loop.index }}">
+  <h2 id="rail-{{ loop.index }}">{{ rail.name }}</h2>
+  <div class="rail-track">
+    {% for recipe in recipes if recipe.id in rail.recipe_ids %}{% include "_recipe_card.html" %}{% endfor %}
+    {% if not rail.recipe_ids %}<p class="empty">Your cookbook is empty. Save a recipe to see it here.</p>{% endif %}
+  </div>
+</section>
+{% endfor %}
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='tv-browse.js') }}"></script>
+{% endblock %}

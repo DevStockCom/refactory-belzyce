@@ -1,6 +1,6 @@
 {# Expects: recipe, saved_ids. #}
 <article class="recipe-card" data-recipe-id="{{ recipe.id }}" data-search="{{ recipe|search_text }}">
-  <a href="{{ url_for('detail', recipe_id=recipe.id) }}" aria-label="View {{ recipe.title }}">
+  <a href="{{ url_for('detail', recipe_id=recipe.id, mode='tv') if tv else url_for('detail', recipe_id=recipe.id) }}" aria-label="View {{ recipe.title }}">
     <div class="recipe-art" style="--art-a:{{ recipe.colors[0] }};--art-b:{{ recipe.colors[1] }}">
       <span class="art-initial" aria-hidden="true">{{ recipe.title[0]|upper }}</span>
     </div>

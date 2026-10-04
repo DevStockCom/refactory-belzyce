@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ recipe.title }} · TableStory{% endblock %}
+{% block body_class %}detail-page tv-detail{% endblock %}
+{% block content %}
+<div class="detail-shell">
+  <a class="back" data-action="back" href="/?mode=tv">← Back to recipes</a>
+  <div class="detail-art recipe-art" style="--art-a:{{ recipe.colors[0] }};--art-b:{{ recipe.colors[1] }}">
+    <span class="art-initial" aria-hidden="true">{{ recipe.title[0]|upper }}</span>
+  </div>
+  <p class="eyebrow">{{ recipe.category }}{% for tag in recipe.dietary_tags %} · {{ tag }}{% endfor %}</p>
+  <h1>{{ recipe.title }}</h1>
+  <p class="description">{{ recipe.description }}</p>
+  <dl class="facts">
+    <div><dt>Prep</dt><dd>{{ recipe.prep_minutes }} min</dd></div>
+    <div><dt>Cook</dt><dd>{{ recipe.cook_minutes }} min</dd></div>
+    <div><dt>Total</dt><dd>{{ recipe|total_minutes }} min</dd></div>
+    <div><dt>Difficulty</dt><dd>{{ recipe.difficulty }}</dd></div>
+    <div><dt>Servings</dt><dd>{{ recipe.servings }}</dd></div>
+  </dl>
+  {% with action = 'cookbook' %}{% include "_cookbook_toggle.html" %}{% endwith %}
+  <section>
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+      {% for item in recipe.ingredients %}<li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section>
+    <h2>Method</h2>
+    <ol class="steps">
+      {% for step in recipe.steps %}<li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='tv-detail.js') }}"></script>
+{% endblock %}
