@@ -1,0 +1,5 @@
+{# Expects: recipe, saved. Optional: action (data-action value). #}
+<button type="button" class="cookbook-toggle{% if saved %} saved{% endif %}"
+  {% if action %}data-action="{{ action }}" {% endif %}data-recipe-id="{{ recipe.id }}" data-recipe-title="{{ recipe.title }}"
+  aria-pressed="{{ 'true' if saved else 'false' }}"
+  aria-label="{{ ('Remove ' ~ recipe.title ~ ' from My Cookbook') if saved else ('Save ' ~ recipe.title ~ ' to My Cookbook') }}"><span class="toggle-icon" aria-hidden="true">{{ '✓' if saved else '+' }}</span> <span class="toggle-text">{{ 'Saved' if saved else 'Save' }}</span></button>

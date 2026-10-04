@@ -1,0 +1,12 @@
+{# Expects: recipe, saved_ids. #}
+<article class="recipe-card" data-recipe-id="{{ recipe.id }}" data-search="{{ recipe|search_text }}">
+  <a href="{{ url_for('detail', recipe_id=recipe.id) }}" aria-label="View {{ recipe.title }}">
+    <div class="recipe-art" style="--art-a:{{ recipe.colors[0] }};--art-b:{{ recipe.colors[1] }}">
+      <span class="art-initial" aria-hidden="true">{{ recipe.title[0]|upper }}</span>
+    </div>
+    <h3>{{ recipe.title }}</h3>
+    <p class="meta">{{ recipe|total_minutes }} min · {{ recipe.difficulty }}</p>
+    <p class="labels"><span class="label">{{ recipe.category }}</span>{% for tag in recipe.dietary_tags %} <span class="label">{{ tag }}</span>{% endfor %}</p>
+  </a>
+  {% with saved = recipe.id in saved_ids %}{% include "_cookbook_toggle.html" %}{% endwith %}
+</article>

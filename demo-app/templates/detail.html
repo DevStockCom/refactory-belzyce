@@ -1,24 +1,36 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{{ movie.title }} · Pocket Cinema</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body class="detail-page">
-  <main class="detail-shell">
-    <a class="back" href="/">← Browse</a>
-    <div class="detail-poster poster" style="--poster-a:{{ movie.colors[0] }};--poster-b:{{ movie.colors[1] }}">
-      <span class="poster-mark">{{ movie.title[0] }}</span>
-      <span class="poster-title">{{ movie.title }}</span>
-    </div>
-    <p class="eyebrow">{{ movie.genres|join(' · ') }}</p>
-    <h1>{{ movie.title }}</h1>
-    <p class="meta">{{ movie.year }} · {{ movie.runtime }} minutes · {{ movie.rating }}</p>
-    <p class="synopsis">{{ movie.synopsis }}</p>
-    <button class="primary watchlist" data-movie-id="{{ movie.id }}">+ Add to watchlist</button>
-  </main>
-  <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}{{ recipe.title }} · TableStory{% endblock %}
+{% block body_class %}detail-page{% endblock %}
+{% block content %}
+<div class="detail-shell">
+  <a class="back" data-action="back" href="{{ back_url }}">← Browse recipes</a>
+  <div class="detail-art recipe-art" style="--art-a:{{ recipe.colors[0] }};--art-b:{{ recipe.colors[1] }}">
+    <span class="art-initial" aria-hidden="true">{{ recipe.title[0]|upper }}</span>
+  </div>
+  <p class="eyebrow">{{ recipe.category }}{% for tag in recipe.dietary_tags %} · {{ tag }}{% endfor %}</p>
+  <h1>{{ recipe.title }}</h1>
+  <p class="description">{{ recipe.description }}</p>
+  <dl class="facts">
+    <div><dt>Prep</dt><dd>{{ recipe.prep_minutes }} min</dd></div>
+    <div><dt>Cook</dt><dd>{{ recipe.cook_minutes }} min</dd></div>
+    <div><dt>Total</dt><dd>{{ recipe|total_minutes }} min</dd></div>
+    <div><dt>Difficulty</dt><dd>{{ recipe.difficulty }}</dd></div>
+    <div><dt>Servings</dt><dd>{{ recipe.servings }}</dd></div>
+  </dl>
+  {% with action = 'cookbook' %}{% include "_cookbook_toggle.html" %}{% endwith %}
+  <section>
+    <h2>Ingredients</h2>
+    <ul class="ingredients">
+      {% for item in recipe.ingredients %}<li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section>
+    <h2>Method</h2>
+    <ol class="steps">
+      {% for step in recipe.steps %}<li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>
+{% endblock %}

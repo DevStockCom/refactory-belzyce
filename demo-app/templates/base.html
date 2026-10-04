@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="TableStory: good food, clearly told. Find, read and save everyday recipes.">
+  <title>{% block title %}TableStory{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}" data-mode="{{ mode }}">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="TableStory home"><span class="brand-mark" aria-hidden="true">T</span>TableStory</a>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
