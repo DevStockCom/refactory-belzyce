@@ -224,7 +224,11 @@ async function mount(doc, responder = () => ({ok: true, status: 200, body: {reci
     if (r instanceof Error) throw r;
     return {ok: r.ok, status: r.status, json: async () => r.body ?? {}, text: async () => JSON.stringify(r.body ?? {})};
   };
-  await import(`${APP_URL.href}?run=${++loadCount}`);
+  try {
+    await import(`${APP_URL.href}?run=${++loadCount}`);
+  } catch (error) {
+    assert.fail(`app.js must load against the recipe client logic and bind the DOM: ${error.message}`);
+  }
   await settle();
   return calls;
 }
