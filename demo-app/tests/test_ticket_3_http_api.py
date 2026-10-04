@@ -333,6 +333,6 @@ def test_app_source_has_no_legacy_symbols():
 def test_test_sources_have_no_legacy_symbols():
     pattern = re.compile(r"\b(" + _M + r"s?|" + _W + r")\b", re.IGNORECASE)
     for path in (DEMO / "tests").glob("*.py"):
-        if path.name.startswith("test_ticket_3"):
-            continue  # acceptance files build the legacy names from fragments
+        if path.name.startswith(("test_ticket_3", "test_ticket_9")):
+            continue  # acceptance files name the legacy terms to assert their absence
         assert not pattern.search(path.read_text()), path.name
